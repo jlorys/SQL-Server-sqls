@@ -1,17 +1,22 @@
 DECLARE @DOB DATETIME
 SET @DOB = '1993-07-11 19:45:31.793'
 
-DECLARE @tempdate DATETIME, @years INT, @months INT, @days INT
-SELECT @tempdate = @DOB
+DECLARE @years INT, @months INT, @days INT
 
-SELECT @years = DATEDIFF(YEAR, @tempdate, GETDATE()) - IIF((MONTH(@DOB) >= MONTH(GETDATE())) AND DAY(@DOB) > DAY(GETDATE()), 1, 0)
-SELECT @tempdate = DATEADD(YEAR, @years, @tempdate)
+SET @years = DATEDIFF(YEAR, @DOB, GETDATE()) - IIF((MONTH(@DOB) >= MONTH(GETDATE())) AND DAY(@DOB) > DAY(GETDATE()), 1, 0)
+SET @DOB = DATEADD(YEAR, @years, @DOB)
 
-SELECT @months = DATEDIFF(MONTH, @tempdate, GETDATE()) - IIF(DAY(@DOB) > DAY(GETDATE()), 1, 0)
-SELECT @tempdate = DATEADD(MONTH, @months, @tempdate)
+SET @months = DATEDIFF(MONTH, @DOB, GETDATE()) - IIF(DAY(@DOB) > DAY(GETDATE()), 1, 0)
+SET @DOB = DATEADD(MONTH, @months, @DOB)
 
-SELECT @days = DATEDIFF(DAY, @tempdate, GETDATE())
+SET @days = DATEDIFF(DAY, @DOB, GETDATE())
 
 SELECT Cast(@years AS  NVARCHAR(4)) + ' Years ' + 
        Cast(@months AS  NVARCHAR(2))+ ' Months ' +  
        Cast(@days AS  NVARCHAR(2))+ ' Days Old'
+
+--Better use SET than select, since SET will throw error when multiple values
+--When using SELECT, the variable is assigned the last value that is returned
+
+--simple
+select CAST(DATEDIFF(day, @DOB, GETDATE()) / 365.242199 AS decimal(10,2))  
