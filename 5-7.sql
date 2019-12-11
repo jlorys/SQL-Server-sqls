@@ -4,7 +4,7 @@
 --3. Set NULL
 --4. Set Default
 
---highlight the table and press alt + f4 to see table details
+--highlight the table and press alt + f1 to see table details
 
 --check constraint
 --The following check constraint, limits the age between ZERO and 150.
