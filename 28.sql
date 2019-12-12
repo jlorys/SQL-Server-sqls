@@ -1,1 +1,0 @@
-Select '1993-07-11 19:45:31.793', Convert(nvarchar, '1993-07-11 19:45:31.793', 103) as ConvertedDOB
