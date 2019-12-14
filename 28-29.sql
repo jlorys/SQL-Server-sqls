@@ -29,7 +29,7 @@ Select SQRT(81) -- Returns 9
 --2. Length parameter, specifies the number of the digits that we want to round to. If the length is a positive number, then the rounding is applied for the decimal part, where as if the length is negative, then the rounding is applied to the number before the decimal.
 --3. The optional function parameter, is used to indicate rounding or truncation operations. A value of 0, indicates rounding, where as a value of non zero indicates truncation. Default, if not specified is 0.
 
-Examples:
+--Examples:
 -- Round to 2 places after (to the right) the decimal point
 Select ROUND(850.556, 2) -- Returns 850.560
 -- Truncate anything after 2 places, after (to the right) the decimal point

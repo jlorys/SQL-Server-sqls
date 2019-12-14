@@ -31,6 +31,7 @@ select * from tblPerson where name like '_@_.com' -- _ specify character
 
 --Display estimated execution plan in SSMS to show union distinct sort
 
+sp_helptext SP_Name --showing procedure source code
 sp_depends SP_Name
 --View the dependencies of the stored procedure. This system SP is very useful, especially if you want to check, 
 --if there are any stored procedures that are referencing a table that you are abput to drop. 
