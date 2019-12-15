@@ -1,21 +1,18 @@
 # SQL-Server-sqls
 
-:fireworks: [1-4](#1-4) <br />
-:fireworks: [5-7](#5-7) <br />
-:fireworks: [8-21](#8-21) <br />
-:fireworks: [22-24](#22-24) <br />
-:fireworks: [25-27](#25-27) <br />
+:fireworks: [1-4](#1-4) Constraints <br />
+:fireworks: [5-7](#5-7) Constraints, Identity <br />
+:fireworks: [8-21](#8-21) Primary Key, Unique Key, like, helptext, depends <br />
+:fireworks: [22-24](#22-24) Built-in functions <br />
+:fireworks: [25-27](#25-27) functions <br />
 :fireworks: [27ageCalcFunction](#27agecalcfunction) <br />
-:fireworks: [28-29](#28-29) <br />
-:fireworks: [30-33](#30-33) <br />
-:fireworks: [34](#34) <br />
-:fireworks: [35](#35) <br />
+:fireworks: [28-29](#28-29) Mathematical functions <br />
+:fireworks: [30-33](#30-33) Inline table function <br />
+:fireworks: [34](#34) Temporary tables <br />
+:fireworks: [35](#35) Indexes <br />
 
 ## 1-4
 ```sql
---Sql Server 2014 Express Edition
---Batches are separated by 'go'
-
 select @@version as 'sql server version'
 
 --Whether, you create a database graphically using the designer or, using a query, the following 2 files gets generated.
@@ -35,19 +32,19 @@ Drop Database DatabaseThatYouWantToDrop
 
 --To add a foreign key reference using a query
 Alter table tblPerson 
-add constraint tblPerson_GenderId_FK FOREIGN KEY (GenderId) references tblGender(ID)
+add constraint tblPerson_GenderId_FK 
+FOREIGN KEY (GenderId) references tblGender(ID)
 
 --Altering an existing column to add a default constraint:
 ALTER TABLE { TABLE_NAME }
 ADD CONSTRAINT { CONSTRAINT_NAME }
 DEFAULT { DEFAULT_VALUE } FOR { EXISTING_COLUMN_NAME }
 
-
 --Adding a new column, with default value, to an existing table:
 ALTER TABLE { TABLE_NAME } 
 ADD { COLUMN_NAME } { DATA_TYPE } { NULL | NOT NULL } 
-CONSTRAINT { CONSTRAINT_NAME } DEFAULT { DEFAULT_VALUE }
-
+CONSTRAINT { CONSTRAINT_NAME } 
+DEFAULT { DEFAULT_VALUE }
 
 --The following command will add a default constraint, DF_tblPerson_GenderId.
 ALTER TABLE tblPerson
@@ -90,10 +87,12 @@ SET Identity_Insert tblPerson ON
 Insert into tblPerson(PersonId, Name) values(2, 'John')
 --As long as the Identity_Insert is turned on for a table, you need to explicitly provide the value for that column.
 
---After, you have the gaps in the identity column filled, and if you wish SQL server to calculate the value, turn off Identity_Insert.
+--After, you have the gaps in the identity column filled, and if you wish SQL server to calculate the value, turn off 
+--Identity_Insert.
 SET Identity_Insert tblPerson OFF
 
---If you have deleted all the rows in a table, and you want to reset the identity column value, use DBCC CHECKIDENT command. This command will reset PersonId identity column.
+--If you have deleted all the rows in a table, and you want to reset the identity column value, use DBCC CHECKIDENT 
+--command. This command will reset PersonId identity column.
 DBCC CHECKIDENT(tblPerson, RESEED, 0)
 ```
 
@@ -102,14 +101,16 @@ DBCC CHECKIDENT(tblPerson, RESEED, 0)
 --In brief:
 --SCOPE_IDENTITY() - returns the last identity value that is created in the same session and in the same scope.
 --@@IDENTITY - returns the last identity value that is created in the same session and across any scope.
---IDENT_CURRENT('TableName') - returns the last identity value that is created for a specific table across any session and any scope.
+--IDENT_CURRENT('TableName') - returns the last identity value that is created for a specific table across any 
+--session and any scope.
 
 --To create the unique key using a query:
 Alter Table Table_Name
 Add Constraint Constraint_Name Unique(Column_Name)
 
---Both primary key and unique key are used to enforce, the uniqueness of a column. So, when do you choose one over the other?
---A table can have, only one primary key. If you want to enforce uniqueness on 2 or more columns, then we use unique key constraint.
+--Both primary key and unique key are used to enforce, the uniqueness of a column.
+--A table can have, only one primary key. If you want to enforce uniqueness on 2 or more columns,
+-- then we use unique key constraint.
 
 --What is the difference between Primary key constraint and Unique key constraint? This question is asked very frequently in interviews.
 --1. A table can have only one primary key, but more than one unique key
@@ -118,7 +119,7 @@ Add Constraint Constraint_Name Unique(Column_Name)
 --To drop the constraint
 --Using a query
 Alter Table tblPerson
-Drop COnstraint UQ_tblPerson_Email
+Drop Constraint UQ_tblPerson_Email
 
 select * from tblPerson where name like '[MST]%' --begins with M or S or T
 select * from tblPerson where name like '^[MST]%' -- not begins with M or S or T
@@ -296,8 +297,10 @@ Select SQRT(81) -- Returns 9
 
 --ROUND ( numeric_expression , length [ ,function ] ) - Rounds the given numeric expression based on the given length. This function takes 3 parameters. 
 --1. Numeric_Expression is the number that we want to round.
---2. Length parameter, specifies the number of the digits that we want to round to. If the length is a positive number, then the rounding is applied for the decimal part, where as if the length is negative, then the rounding is applied to the number before the decimal.
---3. The optional function parameter, is used to indicate rounding or truncation operations. A value of 0, indicates rounding, where as a value of non zero indicates truncation. Default, if not specified is 0.
+--2. Length parameter, specifies the number of the digits that we want to round to. If the length is a positive number, 
+--then the rounding is applied for the decimal part, where as if the length is negative, then the rounding is applied to the number before the decimal.
+--3. The optional function parameter, is used to indicate rounding or truncation operations. A value of 0, indicates rounding, 
+--where as a value of non zero indicates truncation. Default, if not specified is 0.
 
 --Examples:
 -- Round to 2 places after (to the right) the decimal point
