@@ -10,6 +10,7 @@
 :fireworks: [30-33](#30-33) Inline table function <br />
 :fireworks: [34](#34) Temporary tables <br />
 :fireworks: [35](#35) Indexes <br />
+:fireworks: [36-38](#36-38) Indexes continued <br />
 
 ## 1-4
 ```sql
@@ -398,4 +399,42 @@ ON tblEmployee(Gender DESC, Salary ASC)
 --2. Clustered index is faster than a non clustered index, because, the non-clustered index has to refer back to the table, if the selected column is not present in the index.
 --3. Clustered index determines the storage order of rows in the table, and hence doesn't require additional disk space, but where as a Non Clustered index is stored seperately 
 --from the table, additional storage space is required.
+```
+
+## 36-38
+```sql
+
+--Creating a UNIQUE NON CLUSTERED index on the FirstName and LastName columns.
+Create Unique NonClustered Index UIX_tblEmployee_FirstName_LastName
+On tblEmployee(FirstName, LastName)
+
+--This unique non clustered index, ensures that no 2 entires in the index has the same first and last names. In Part 9, of this video series, 
+--we have learnt that, a Unique Constraint, can be used to enforce the uniqueness of values, across one or more columns. There are no major 
+--differences between a unique constraint and a unique index. 
+
+--In fact, when you add a unique constraint, a unique index gets created behind the scenes. To prove this, 
+--let's add a unique constraint on the city column of the tblEmployee table.
+ALTER TABLE tblEmployee 
+ADD CONSTRAINT UQ_tblEmployee_City 
+UNIQUE NONCLUSTERED (City)
+
+--executing 
+EXECUTE SP_HELPCONSTRAINT tblEmployee
+--, lists the constraint as a UNIQUE NONCLUSTERED index.
+
+--Diadvantages of Indexes:
+--Additional Disk Space: Clustered Index does not, require any additional storage. Every Non-Clustered index requires additional space as it 
+--is stored separately from the table.The amount of space required will depend on the size of the table, and the number and types of columns used in the index.
+
+--Insert Update and Delete statements can become slow: When DML (Data Manipulation Language) statements (INSERT, UPDATE, DELETE) modifies data in a 
+--table, the data in all the indexes also needs to be updated. Indexes can help, to search and locate the rows, that we want to delete, but too many indexes 
+--to update can actually hurt the performance of data modifications.
+
+--What is a covering query?
+--If all the columns that you have requested in the SELECT clause of query, are present in the index, then there is no need to lookup in the table again. 
+--The requested columns data can simply be returned from the index.
+
+--A clustered index, always covers a query, since it contains all of the data in a table. A composite index is an index on two or more columns. Both clustered 
+--and nonclustered indexes can be composite indexes. To a certain extent, a composite index, can cover a query.
+
 ```
