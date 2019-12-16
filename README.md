@@ -14,27 +14,27 @@
 
 ## 1-4
 ```sql
-select @@version as 'sql server version'
+SELECT @@VERSION AS 'sql server version'
 
 --Whether, you create a database graphically using the designer or, using a query, the following 2 files gets generated.
 --.MDF file - Data File (Contains actual data)
 --.LDF file - Transaction Log file (Used to recover the database)
 
 --To alter a database, once it's created 
-Alter database DatabaseName Modify Name = NewDatabaseName
+ALTER DATABASE DatabaseName MODIFY Name = NewDatabaseName
 
 --Alternatively, you can also use system stored procedure
-Execute sp_renameDB 'OldDatabaseName','NewDatabaseName'
+EXECUTE SP_RENAMEDB 'OldDatabaseName','NewDatabaseName'
 
 --To Delete or Drop a database
-Drop Database DatabaseThatYouWantToDrop
+DROP DATABASE DatabaseThatYouWantToDrop
 
 --Dropping a database, deletes the LDF and MDF files.
 
 --To add a foreign key reference using a query
-Alter table tblPerson 
-add constraint tblPerson_GenderId_FK 
-FOREIGN KEY (GenderId) references tblGender(ID)
+ALTER TABLE tblPerson 
+ADD CONSTRAINT tblPerson_GenderId_FK 
+FOREIGN KEY (GenderId) REFERENCES tblGender(ID)
 
 --Altering an existing column to add a default constraint:
 ALTER TABLE { TABLE_NAME }
@@ -78,14 +78,14 @@ DROP CONSTRAINT CK_tblPerson_Age
 
 --identity; first param is seed second is increment
 --Seed and Increment values are optional. If you don't specify the identity and seed they both default to 1.
-Create Table tblPerson
+CREATE TABLE tblPerson
 (
 PersonId int Identity(1,1) Primary Key,
 Name nvarchar(20)
 )
 
 SET Identity_Insert tblPerson ON
-Insert into tblPerson(PersonId, Name) values(2, 'John')
+INSERT INTO tblPerson(PersonId, Name) VALUES (2, 'John')
 --As long as the Identity_Insert is turned on for a table, you need to explicitly provide the value for that column.
 
 --After, you have the gaps in the identity column filled, and if you wish SQL server to calculate the value, turn off 
@@ -106,8 +106,8 @@ DBCC CHECKIDENT(tblPerson, RESEED, 0)
 --session and any scope.
 
 --To create the unique key using a query:
-Alter Table Table_Name
-Add Constraint Constraint_Name Unique(Column_Name)
+ALTER TABLE Table_Name
+ADD CONSTRAINT Constraint_Name UNIQUE(Column_Name)
 
 --Both primary key and unique key are used to enforce, the uniqueness of a column.
 --A table can have, only one primary key. If you want to enforce uniqueness on 2 or more columns,
@@ -119,12 +119,12 @@ Add Constraint Constraint_Name Unique(Column_Name)
 
 --To drop the constraint
 --Using a query
-Alter Table tblPerson
-Drop Constraint UQ_tblPerson_Email
+ALTER TABLE tblPerson
+DROP CONSTRAINT UQ_tblPerson_Email
 
-select * from tblPerson where name like '[MST]%' --begins with M or S or T
-select * from tblPerson where name like '^[MST]%' -- not begins with M or S or T
-select * from tblPerson where name like '_@_.com' -- _ specify character
+SELECT * FROM tblPerson WHERE name LIKE '[MST]%' --begins with M or S or T
+SELECT * FROM tblPerson WHERE name LIKE '^[MST]%' -- not begins with M or S or T
+SELECT * FROM tblPerson WHERE name LIKE '_@_.com' -- _ specify character
 -- % specifies zero or more characters
 
 --select top 10 Percent *...
@@ -134,8 +134,8 @@ select * from tblPerson where name like '_@_.com' -- _ specify character
 
 --Display estimated execution plan in SSMS to show union distinct sort
 
-execute sp_helptext SP_Name --showing procedure source code
-execute sp_depends SP_Name
+EXECUTE SP_HELPTEXT SP_Name --showing procedure source code
+EXECUTE SP_DEPENDS SP_Name
 --View the dependencies of the stored procedure. This system SP is very useful, especially if you want to check, 
 --if there are any stored procedures that are referencing a table that you are abput to drop. 
 --sp_depends can also be used with other database objects like table etc.
@@ -167,37 +167,37 @@ execute sp_depends SP_Name
 ## 22-24
 ```sql
 --Example: 
-Select ASCII('A')
+SELECT ASCII('A')
 --Output: 65
 
 --CHAR(Integer_Expression) - Converts an int ASCII code to a character. The Integer_Expression, should be between 0 and 255.
 --The following SQL, prints all the characters for the ASCII values from o thru 255
 
-Declare @Number int
-Set @Number = 1
-While(@Number <= 255)
-Begin
- Print CHAR(@Number)
- Set @Number = @Number + 1
-End
+DECLARE @Number INT
+SET @Number = 1
+WHILE(@Number <= 255)
+BEGIN
+ PRINT CHAR(@Number)
+ SET @Number = @Number + 1
+END
 
-Select LTRIM('   Hello') --Output: Hello
-Select RTRIM('Hello   ') --Output: Hello
-Select LTRIM(RTRIM('   Hello   ')) --Output: Hello
-Select LOWER('CONVERT This String Into Lower Case') --Output: convert this string into lower case
-Select UPPER('CONVERT This String Into upper Case') --Output: CONVERT THIS STRING INTO UPPER CASE
-Select REVERSE('ABCDEFGHIJKLMNOPQRSTUVWXYZ') --Output: ZYXWVUTSRQPONMLKJIHGFEDCBA
-Select LEN('SQL Functions   ') --Output: 13
-Select LEFT('ABCDE', 3) --Output: ABC
-Select RIGHT('ABCDE', 3) --Output: CDE
-Select CHARINDEX('@','sara@aaa.com',1) --Output: 5
-Select SUBSTRING('John@bbb.com',6, 7) --Output: bbb.com
-Select SUBSTRING('John@bbb.com',(CHARINDEX('@', 'John@bbb.com') + 1), (LEN('John@bbb.com') - CHARINDEX('@','John@bbb.com'))) --Output: bbb.com
+SELECT LTRIM('   Hello') --Output: Hello
+SELECT RTRIM('Hello   ') --Output: Hello
+SELECT LTRIM(RTRIM('   Hello   ')) --Output: Hello
+SELECT LOWER('CONVERT This String Into Lower Case') --Output: convert this string into lower case
+SELECT UPPER('CONVERT This String Into upper Case') --Output: CONVERT THIS STRING INTO UPPER CASE
+SELECT REVERSE('ABCDEFGHIJKLMNOPQRSTUVWXYZ') --Output: ZYXWVUTSRQPONMLKJIHGFEDCBA
+SELECT LEN('SQL Functions   ') --Output: 13
+SELECT LEFT('ABCDE', 3) --Output: ABC
+SELECT RIGHT('ABCDE', 3) --Output: CDE
+SELECT CHARINDEX('@','sara@aaa.com',1) --Output: 5
+SELECT SUBSTRING('John@bbb.com',6, 7) --Output: bbb.com
+SELECT SUBSTRING('John@bbb.com',(CHARINDEX('@', 'John@bbb.com') + 1), (LEN('John@bbb.com') - CHARINDEX('@','John@bbb.com'))) --Output: bbb.com
 SELECT REPLICATE('Pragim', 3) --Output: Pragim Pragim Pragim 
 SELECT SPACE(5) + 'abc' --Output:     abc
-Select PATINDEX('%@aaa.com', 'qwerty@aaa.com') as FirstOccurence --Output: 7
-Select REPLACE('qwerty@aaa.com', '.com', '.net') as ConvertedEmail --Output: qwerty@aaa.net
-Select STUFF('qwerty@aaa.com', 2, 3, '*****') as StuffedEmail --Output: q*****ty@aaa.com
+SELECT PATINDEX('%@aaa.com', 'qwerty@aaa.com') as FirstOccurence --Output: 7
+SELECT REPLACE('qwerty@aaa.com', '.com', '.net') as ConvertedEmail --Output: qwerty@aaa.net
+SELECT STUFF('qwerty@aaa.com', 2, 3, '*****') as StuffedEmail --Output: q*****ty@aaa.com
 ```
 
 ## 25-27
@@ -213,33 +213,33 @@ SYSDATETIMEOFFSET()	--2012-08-31 20:15:04.5380028 + 01:00	More fractional second
 GETUTCDATE()	    --2012-08-31 19:15:04.543	            UTC Date and Time
 SYSUTCDATETIME()	--2012-08-31 19:15:04.5380028	        UTC Date and Time, with More fractional seconds precision
 
-select ISDATE('pragim') --0
-select ISDATE(getdate()) --1
-Select ISDATE('2012-08-31 21:02:04.167') -- returns 1
+SELECT ISDATE('pragim') --0
+SELECT ISDATE(getdate()) --1
+SELECT ISDATE('2012-08-31 21:02:04.167') -- returns 1
 --Note: For datetime2 values, IsDate returns ZERO.
-Select ISDATE('2012-09-01 11:34:21.1918447') -- returns 0.
+SELECT ISDATE('2012-09-01 11:34:21.1918447') -- returns 0.
 
-Select DAY(GETDATE()) -- Returns the day number of the month, based on current system datetime.
-Select DAY('01/31/2012') -- Returns 31
-Select Month(GETDATE()) -- Returns the Month number of the year, based on the current system date and time
-Select Month('01/31/2012') -- Returns 1
-Select Year(GETDATE()) -- Returns the year number, based on the current system date
-Select Year('01/31/2012') -- Returns 2012
+SELECT DAY(GETDATE()) -- Returns the day number of the month, based on current system datetime.
+SELECT DAY('01/31/2012') -- Returns 31
+SELECT Month(GETDATE()) -- Returns the Month number of the year, based on the current system date and time
+SELECT Month('01/31/2012') -- Returns 1
+SELECT Year(GETDATE()) -- Returns the year number, based on the current system date
+SELECT Year('01/31/2012') -- Returns 2012
 
-Select DATENAME(DAY, '2019-12-10 12:43:46.837') -- Returns 10
-Select DATENAME(WEEKDAY, '2019-12-10 12:43:46.837') -- Returns Tuesday
-Select DATENAME(MONTH, '2019-12-10 12:43:46.837') -- Returns December
-Select DATENAME(QUARTER, '2019-12-10 12:43:46.837') -- Returns 4
-Select DATENAME(DAYOFYEAR, '2019-12-10 12:43:46.837') -- Returns 344
+SELECT DATENAME(DAY, '2019-12-10 12:43:46.837') -- Returns 10
+SELECT DATENAME(WEEKDAY, '2019-12-10 12:43:46.837') -- Returns Tuesday
+SELECT DATENAME(MONTH, '2019-12-10 12:43:46.837') -- Returns December
+SELECT DATENAME(QUARTER, '2019-12-10 12:43:46.837') -- Returns 4
+SELECT DATENAME(DAYOFYEAR, '2019-12-10 12:43:46.837') -- Returns 344
 
-Select DATEPART(weekday, '2019-12-10 19:45:31.793') -- returns 3
-Select DATENAME(weekday, '2019-12-10 19:45:31.793') -- returns Tuesday
+SELECT DATEPART(weekday, '2019-12-10 19:45:31.793') -- returns 3
+SELECT DATENAME(weekday, '2019-12-10 19:45:31.793') -- returns Tuesday
 
-Select DateAdd(DAY, 20, '2012-08-30 19:45:31.793') -- Returns 2012-09-19 19:45:31.793
-Select DateAdd(DAY, -20, '2012-08-30 19:45:31.793') -- Returns 2012-08-10 19:45:31.793
+SELECT DateAdd(DAY, 20, '2012-08-30 19:45:31.793') -- Returns 2012-09-19 19:45:31.793
+SELECT DateAdd(DAY, -20, '2012-08-30 19:45:31.793') -- Returns 2012-08-10 19:45:31.793
 
-Select DATEDIFF(MONTH, '11/30/2005','01/31/2006') -- returns 2
-Select DATEDIFF(DAY, '11/30/2005','01/31/2006') -- returns 62
+SELECT DATEDIFF(MONTH, '11/30/2005','01/31/2006') -- returns 2
+SELECT DATEDIFF(DAY, '11/30/2005','01/31/2006') -- returns 62
 ```
 
 ## 27ageCalcFunction
@@ -265,36 +265,36 @@ SELECT Cast(@years AS  NVARCHAR(4)) + ' Years ' +
 --When using SELECT, the variable is assigned the last value that is returned
 
 --simple
-select CAST(DATEDIFF(day, @DOB, GETDATE()) / 365.242199 AS decimal(10,2))  
+SELECT CAST(DATEDIFF(day, @DOB, GETDATE()) / 365.242199 AS decimal(10,2))  
 ```
 
 ## 28-29
 ```sql
-Select '1993-07-11 19:45:31.793', Convert(nvarchar, '1993-07-11 19:45:31.793', 103) as ConvertedDOB
+SELECT '1993-07-11 19:45:31.793', Convert(nvarchar, '1993-07-11 19:45:31.793', 103) as ConvertedDOB
 
-Select ABS(-101.5) -- returns 101.5, without the - sign.
-Select CEILING(15.2) -- Returns 16
-Select CEILING(-15.2) -- Returns -15
-Select FLOOR(15.2) -- Returns 15
-Select FLOOR(-15.2) -- Returns -16
-Select POWER(2,3) -- Returns 8
-Select RAND(1) -- Always returns the same value
+SELECT ABS(-101.5) -- returns 101.5, without the - sign.
+SELECT CEILING(15.2) -- Returns 16
+SELECT CEILING(-15.2) -- Returns -15
+SELECT FLOOR(15.2) -- Returns 15
+SELECT FLOOR(-15.2) -- Returns -16
+SELECT POWER(2,3) -- Returns 8
+SELECT RAND(1) -- Always returns the same value
 
 --If you want to generate a random number between 1 and 100, RAND() and FLOOR() functions can 
 --be used as shown below. Every time, you execute this query, you get a random number between 1 and 100.
-Select FLOOR(RAND() * 100)
+SELECT FLOOR(RAND() * 100)
 
 --The following query prints 10 random numbers between 1 and 100.
-Declare @Counter INT
-Set @Counter = 1
-While(@Counter <= 10)
-Begin
- Print FLOOR(RAND() * 100)
- Set @Counter = @Counter + 1
-End
+DECLARE @Counter INT
+SET @Counter = 1
+WHILE(@Counter <= 10)
+BEGIN
+ PRINT FLOOR(RAND() * 100)
+ SET @Counter = @Counter + 1
+END
 
-Select SQUARE(9) -- Returns 81
-Select SQRT(81) -- Returns 9
+SELECT SQUARE(9) -- Returns 81
+SELECT SQRT(81) -- Returns 9
 
 --ROUND ( numeric_expression , length [ ,function ] ) - Rounds the given numeric expression based on the given length. This function takes 3 parameters. 
 --1. Numeric_Expression is the number that we want to round.
@@ -305,17 +305,17 @@ Select SQRT(81) -- Returns 9
 
 --Examples:
 -- Round to 2 places after (to the right) the decimal point
-Select ROUND(850.556, 2) -- Returns 850.560
+SELECT ROUND(850.556, 2) -- Returns 850.560
 -- Truncate anything after 2 places, after (to the right) the decimal point
-Select ROUND(850.556, 2, 1) -- Returns 850.550
+SELECT ROUND(850.556, 2, 1) -- Returns 850.550
 -- Round to 1 place after (to the right) the decimal point
-Select ROUND(850.556, 1) -- Returns 850.600
+SELECT ROUND(850.556, 1) -- Returns 850.600
 -- Truncate anything after 1 place, after (to the right) the decimal point
-Select ROUND(850.556, 1, 1) -- Returns 850.500
+SELECT ROUND(850.556, 1, 1) -- Returns 850.500
 -- Round the last 2 places before (to the left) the decimal point
-Select ROUND(850.556, -2) -- 900.000
+SELECT ROUND(850.556, -2) -- 900.000
 -- Round the last 1 place before (to the left) the decimal point
-Select ROUND(850.556, -1) -- 850.000
+SELECT ROUND(850.556, -1) -- 850.000
 ```
 
 ## 30-33
@@ -324,9 +324,9 @@ Select ROUND(850.556, -1) -- 850.000
 CREATE FUNCTION fn_EmployeesByGender(@Gender nvarchar(10))
 RETURNS TABLE
 AS
-RETURN (Select Id, Name, DateOfBirth, Gender, DepartmentId
-      from tblEmployees
-      where Gender = @Gender)
+RETURN (SELECT Id, Name, DateOfBirth, Gender, DepartmentId
+      FROM tblEmployees
+      WHERE Gender = @Gender)
       
 --If you look at the way we implemented this function, it is very similar to SCALAR function, with the following differences
 --1. We specify TABLE as the return type, instead of any scalar data type
@@ -334,7 +334,7 @@ RETURN (Select Id, Name, DateOfBirth, Gender, DepartmentId
 --3. The structure of the table that gets returned, is determined by the SELECT statement with in the function.
 
 --Calling the user defined function
-Select * from fn_EmployeesByGender('Male')
+SELECT * FROM fn_EmployeesByGender('Male')
 
 --Where can we use Inline Table Valued functions
 --1. Inline Table Valued functions can be used to achieve the functionality of parameterized views. We will talk about views, in a later session.
@@ -352,13 +352,13 @@ Select * from fn_EmployeesByGender('Male')
 --Rand() function is a Non-deterministic function, but if you provide the seed value, the function becomes deterministic, as the same value gets returned for the same seed value.
 
 --below schema binding prevents dropping source table
-Alter Function fn_GetEmployeeNameById(@Id int)
-Returns nvarchar(20)
-With SchemaBinding
-as
-Begin
- Return (Select Name from dbo.tblEmployees Where Id = @Id)
-End
+ALTER FUNCTION fn_GetEmployeeNameById(@Id int)
+RETURNS nvarchar(20)
+WITH SchemaBinding
+AS
+BEGIN
+ RETURN (SELECT Name FROM dbo.tblEmployees WHERE Id = @Id)
+END
 ```
 
 ## 34
@@ -366,8 +366,8 @@ End
 --How to check if the local temporary table is created
 --Temporary tables are created in the TEMPDB. Query the sysobjects system table in TEMPDB. The name of the table, is suffixed 
 --with lot of underscores and a random number. For this reason you have to use the LIKE operator in the query.
-Select name from tempdb..sysobjects 
-where name like '#PersonDetails%'
+SELECT name FROM tempdb..sysobjects 
+WHERE name LIKE '#PersonDetails%'
 
 --How to Create a Global Temporary Table:
 --To create a Global Temporary Table, prefix the name of the table with 2 pound (##) symbols. 
@@ -380,18 +380,18 @@ where name like '#PersonDetails%'
 ## 35
 ```sql
 --Let's Create the Index to help the query:Here, we are creating an index on Salary column in the employee table
-CREATE Index IX_tblEmployee_Salary 
+CREATE INDEX IX_tblEmployee_Salary 
 ON tblEmployee (SALARY ASC) --Non-unique, Non-clustered
 
 --To view the Indexes: In the object explorer, expand Indexes folder. 
 --Alternatively use sp_helptext system stored procedure. The following command query returns all the indexes on tblEmployee table.
-execute sp_helpindex tblEmployee
+EXECUTE SP_HELPINDEX tblEmployee
 
 --To delete or drop the index: When dropping an index, specify the table name as well
-Drop Index tblEmployee.IX_tblEmployee_Salary
+DROP INDEX tblEmployee.IX_tblEmployee_Salary
 
 --Clustered index defines physical order of date in table (firstly by Gender, secondly by Salary)
-Create Clustered Index IX_tblEmployee_Gender_Salary
+CREATE CLUSTERED INDEX IX_tblEmployee_Gender_Salary
 ON tblEmployee(Gender DESC, Salary ASC)
 
 --Difference between Clustered and NonClustered Index:
@@ -405,7 +405,7 @@ ON tblEmployee(Gender DESC, Salary ASC)
 ```sql
 
 --Creating a UNIQUE NON CLUSTERED index on the FirstName and LastName columns.
-Create Unique NonClustered Index UIX_tblEmployee_FirstName_LastName
+CREATE UNIQUE NONCLUSTERED INDEX UIX_tblEmployee_FirstName_LastName
 On tblEmployee(FirstName, LastName)
 
 --This unique non clustered index, ensures that no 2 entires in the index has the same first and last names. In Part 9, of this video series, 
