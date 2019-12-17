@@ -221,10 +221,10 @@ SELECT ISDATE('2012-09-01 11:34:21.1918447') -- returns 0.
 
 SELECT DAY(GETDATE()) -- Returns the day number of the month, based on current system datetime.
 SELECT DAY('01/31/2012') -- Returns 31
-SELECT Month(GETDATE()) -- Returns the Month number of the year, based on the current system date and time
-SELECT Month('01/31/2012') -- Returns 1
-SELECT Year(GETDATE()) -- Returns the year number, based on the current system date
-SELECT Year('01/31/2012') -- Returns 2012
+SELECT MONTH(GETDATE()) -- Returns the Month number of the year, based on the current system date and time
+SELECT MONTH('01/31/2012') -- Returns 1
+SELECT YEAR(GETDATE()) -- Returns the year number, based on the current system date
+SELECT YEAR('01/31/2012') -- Returns 2012
 
 SELECT DATENAME(DAY, '2019-12-10 12:43:46.837') -- Returns 10
 SELECT DATENAME(WEEKDAY, '2019-12-10 12:43:46.837') -- Returns Tuesday
@@ -235,8 +235,8 @@ SELECT DATENAME(DAYOFYEAR, '2019-12-10 12:43:46.837') -- Returns 344
 SELECT DATEPART(weekday, '2019-12-10 19:45:31.793') -- returns 3
 SELECT DATENAME(weekday, '2019-12-10 19:45:31.793') -- returns Tuesday
 
-SELECT DateAdd(DAY, 20, '2012-08-30 19:45:31.793') -- Returns 2012-09-19 19:45:31.793
-SELECT DateAdd(DAY, -20, '2012-08-30 19:45:31.793') -- Returns 2012-08-10 19:45:31.793
+SELECT DATEADD(DAY, 20, '2012-08-30 19:45:31.793') -- Returns 2012-09-19 19:45:31.793
+SELECT DATEADD(DAY, -20, '2012-08-30 19:45:31.793') -- Returns 2012-08-10 19:45:31.793
 
 SELECT DATEDIFF(MONTH, '11/30/2005','01/31/2006') -- returns 2
 SELECT DATEDIFF(DAY, '11/30/2005','01/31/2006') -- returns 62
