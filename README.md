@@ -11,6 +11,7 @@
 :fireworks: [34](#34) Temporary tables <br />
 :fireworks: [35](#35) Indexes <br />
 :fireworks: [36-38](#36-38) Indexes continued <br />
+:fireworks: [39-42](#39-42) Views <br />
 
 ## 1-4
 ```sql
@@ -437,4 +438,33 @@ EXECUTE SP_HELPCONSTRAINT tblEmployee
 --A clustered index, always covers a query, since it contains all of the data in a table. A composite index is an index on two or more columns. Both clustered 
 --and nonclustered indexes can be composite indexes. To a certain extent, a composite index, can cover a query.
 
+```
+## 39-42
+```sql
+--when you create an index, on a view, the view gets materialized. This means, the view is now, 
+--capable of storing data. In SQL server, we call them Indexed views and in Oracle, Materialized views.
+--Script to create view vWTotalSalesByProduct
+
+Create view vWTotalSalesByProduct
+with SchemaBinding
+as
+	Select Name, 
+		   SUM(ISNULL((QuantitySold * UnitPrice), 0)) as TotalSales, 
+	       COUNT_BIG(*) as TotalTransactions
+	from dbo.tblProductSales
+	join dbo.tblProduct
+	on dbo.tblProduct.ProductId = dbo.tblProductSales.ProductId
+	group by Name
+	
+Create Unique Clustered Index UIX_vWTotalSalesByProduct_Name
+on vWTotalSalesByProduct(Name)
+
+--Since, we now have an index on the view, the view gets materialized. The data is stored in the view.
+
+--Indexed views are ideal for scenarios, where the underlying data is not frequently changed. Indexed views 
+--are more often used in OLAP systems, because the data is mainly used for reporting and analysis purposes. 
+--Indexed views, may not be suitable for OLTP systems, as the data is frequently addedd and changed.
+
+--You cannot order by in view definition
+--Views cannot be based on temporary tables (functions either)
 ```
