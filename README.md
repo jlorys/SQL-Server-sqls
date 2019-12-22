@@ -11,7 +11,7 @@
 :fireworks: [34](#34) Temporary tables <br />
 :fireworks: [35](#35) Indexes <br />
 :fireworks: [36-38](#36-38) Indexes continued <br />
-:fireworks: [39-42](#39-42) Views <br />
+:fireworks: [39-51](#39-51) Views <br />
 
 ## 1-4
 ```sql
@@ -439,7 +439,7 @@ EXECUTE SP_HELPCONSTRAINT tblEmployee
 --and nonclustered indexes can be composite indexes. To a certain extent, a composite index, can cover a query.
 
 ```
-## 39-42
+## 39-51
 ```sql
 --when you create an index, on a view, the view gets materialized. This means, the view is now, 
 --capable of storing data. In SQL server, we call them Indexed views and in Oracle, Materialized views.
@@ -467,4 +467,80 @@ on vWTotalSalesByProduct(Name)
 
 --You cannot order by in view definition
 --Views cannot be based on temporary tables (functions either)
+```
+## 52-
+```sql
+--Database normalization is the process of organizing data to minimize data redundancy (data duplication), which in turn ensures data consistency.
+--Now, let's explore the first normal form (1NF). A table is said to be in 1NF, if
+--1. The data in each column should be atomic. No multiple values, sepearated by comma.
+--2. The table does not contain any repeating column groups
+--3. Identify each record uniquely using primary key.
+
+--A table is said to be in 2NF, if
+--1. The table meets all the conditions of 1NF
+--2. Move redundant data to a separate table
+--3. Create relationship between these tables using foreign keys.
+
+--A table is said to be in 3NF, if the table
+--1. Meets all the conditions of 1NF and 2NF
+--2. Does not contain columns (attributes) that are not fully dependent upon the primary key
+
+--TRANSACTIONS:
+--In SQL Server 2000 there was begin tran, end tran with @@ERROR function. In 2005 or later there is begin transaction, 
+--end transaction in try catch (should be in begin try, end try)
+
+Create Procedure spSellProduct
+@ProductId int,
+@QuantityToSell int
+as
+Begin
+ -- Check the stock available, for the product we want to sell
+ Declare @StockAvailable int
+ Select @StockAvailable = QtyAvailable 
+ from tblProduct where ProductId = @ProductId
+ 
+ -- Throw an error to the calling application, if enough stock is not available
+ if(@StockAvailable < @QuantityToSell)
+  Begin
+  Raiserror('Not enough stock available',16,1)
+  End
+ -- If enough stock available
+ Else
+  Begin
+   Begin Try
+    Begin Transaction
+        -- First reduce the quantity available
+  Update tblProduct set QtyAvailable = (QtyAvailable - @QuantityToSell)
+  where ProductId = @ProductId
+  
+  Declare @MaxProductSalesId int
+  -- Calculate MAX ProductSalesId  
+  Select @MaxProductSalesId = Case When 
+          MAX(ProductSalesId) IS NULL 
+          Then 0 else MAX(ProductSalesId) end 
+         from tblProductSales
+  --Increment @MaxProductSalesId by 1, so we don't get a primary key violation
+  Set @MaxProductSalesId = @MaxProductSalesId + 1
+  Insert into tblProductSales values(@MaxProductSalesId, @ProductId, @QuantityToSell)
+    Commit Transaction
+   End Try
+   Begin Catch 
+  Rollback Transaction
+  Select 
+   ERROR_NUMBER() as ErrorNumber,
+   ERROR_MESSAGE() as ErrorMessage,
+   ERROR_PROCEDURE() as ErrorProcedure,
+   ERROR_STATE() as ErrorState,
+   ERROR_SEVERITY() as ErrorSeverity,
+   ERROR_LINE() as ErrorLine
+   End Catch 
+  End
+End
+
+--SQL server by default cannot select uncommited data, there is possible to change iT:
+SET TRANSACTION ISOLATION LEVEL READ UNCOMMITED;
+
+
+
+
 ```
