@@ -537,7 +537,7 @@ Begin
   End
 End
 
---SQL server by default cannot select uncommited data, there is possible to change iT:
+--SQL server by default cannot select uncommited data, there is possible to change it:
 SET TRANSACTION ISOLATION LEVEL READ UNCOMMITED;
 
 
