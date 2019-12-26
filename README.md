@@ -12,6 +12,7 @@
 :fireworks: [35](#35) Indexes <br />
 :fireworks: [36-38](#36-38) Indexes continued <br />
 :fireworks: [39-51](#39-51) Views <br />
+:fireworks: [52-62](#52-62) Normalization, transactions <br />
 
 ## 1-4
 ```sql
@@ -468,7 +469,7 @@ on vWTotalSalesByProduct(Name)
 --You cannot order by in view definition
 --Views cannot be based on temporary tables (functions either)
 ```
-## 52-
+## 52-62
 ```sql
 --Database normalization is the process of organizing data to minimize data redundancy (data duplication), which in turn ensures data consistency.
 --Now, let's explore the first normal form (1NF). A table is said to be in 1NF, if
@@ -539,6 +540,26 @@ End
 
 --SQL server by default cannot select uncommited data, there is possible to change it:
 SET TRANSACTION ISOLATION LEVEL READ UNCOMMITED;
+```
+
+## 63
+```sql
+
+--However, if there is ever a need to process the rows, on a row-by-row basis, then cursors are your choice. 
+--Cursors are very bad for performance, and should be avoided always. Most of the time, cursors can be very easily replaced using joins.
+--Update statement using cursor is totally not efficient
+
+--Some of the common concurrency problems:
+--Dirty Reads
+--Lost Updates
+--Nonrepeatable Reads
+--Phantom Reads
+
+--A dirty read happens when one transaction is permitted to read data that has 
+--been modified by another transaction that has not yet been committed. 
+--Read Uncommitted transaction isolation level is the only isolation level that has dirty read side effect.
+
+
 
 
 
