@@ -13,6 +13,7 @@
 :fireworks: [36-38](#36-38) Indexes continued <br />
 :fireworks: [39-51](#39-51) Views <br />
 :fireworks: [52-62](#52-62) Normalization, transactions <br />
+:fireworks: [63-77](#63-77) Cursors, transaction isolation levels <br />
 
 ## 1-4
 
@@ -549,7 +550,7 @@ End
 SET TRANSACTION ISOLATION LEVEL READ UNCOMMITED;
 ```
 
-## 63
+## 63-77
 ```sql
 
 --However, if there is ever a need to process the rows, on a row-by-row basis, then cursors are your choice. 
@@ -602,6 +603,11 @@ Set transaction isolation level snapshot
 Alter database SampleDB SET READ_COMMITTED_SNAPSHOT ON --to do it you must close all database connections, then:
 Set transaction isolation level read commited
 --above is not a different isolation level, it is a different way of implementing read commited isolation level
+
+```
+
+## 79-
+```sql
 
 
 
