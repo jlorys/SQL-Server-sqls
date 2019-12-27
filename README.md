@@ -15,12 +15,13 @@
 :fireworks: [52-62](#52-62) Normalization, transactions <br />
 
 ## 1-4
-```sql
-SELECT @@VERSION AS 'sql server version'
 
 --Whether, you create a database graphically using the designer or, using a query, the following 2 files gets generated.
 --.MDF file - Data File (Contains actual data)
 --.LDF file - Transaction Log file (Used to recover the database)
+
+```sql
+SELECT @@VERSION AS 'sql server version'
 
 --To alter a database, once it's created 
 ALTER DATABASE DatabaseName MODIFY Name = NewDatabaseName
@@ -60,7 +61,7 @@ DROP CONSTRAINT { CONSTRAINT_NAME }
 ```
 
 ## 5-7
-```sql
+
 --Cascading referential integrity
 --1. No Action
 --2. Cascade
@@ -69,6 +70,7 @@ DROP CONSTRAINT { CONSTRAINT_NAME }
 
 --highlight the table and press alt + f1 to see table details
 
+```sql
 --check constraint
 --The following check constraint, limits the age between ZERO and 150.
 ALTER TABLE tblPerson
@@ -100,16 +102,12 @@ DBCC CHECKIDENT(tblPerson, RESEED, 0)
 ```
 
 ## 8-21
-```sql
+
 --In brief:
 --SCOPE_IDENTITY() - returns the last identity value that is created in the same session and in the same scope.
 --@@IDENTITY - returns the last identity value that is created in the same session and across any scope.
 --IDENT_CURRENT('TableName') - returns the last identity value that is created for a specific table across any 
 --session and any scope.
-
---To create the unique key using a query:
-ALTER TABLE Table_Name
-ADD CONSTRAINT Constraint_Name UNIQUE(Column_Name)
 
 --Both primary key and unique key are used to enforce, the uniqueness of a column.
 --A table can have, only one primary key. If you want to enforce uniqueness on 2 or more columns,
@@ -118,6 +116,12 @@ ADD CONSTRAINT Constraint_Name UNIQUE(Column_Name)
 --What is the difference between Primary key constraint and Unique key constraint? This question is asked very frequently in interviews.
 --1. A table can have only one primary key, but more than one unique key
 --2. Primary key does not allow nulls, where as unique key allows one null
+
+```sql
+
+--To create the unique key using a query:
+ALTER TABLE Table_Name
+ADD CONSTRAINT Constraint_Name UNIQUE(Column_Name)
 
 --To drop the constraint
 --Using a query
@@ -142,6 +146,8 @@ EXECUTE SP_DEPENDS SP_Name
 --if there are any stored procedures that are referencing a table that you are abput to drop. 
 --sp_depends can also be used with other database objects like table etc.
 
+```
+
 --When we execute procedure, then SQL server do these things:
 --1. Check syntax of the query
 --2. Compile the query
@@ -164,7 +170,6 @@ EXECUTE SP_DEPENDS SP_Name
 --This is fine grain access control which will help control what data a user has access to.
 
 --5. Avoids SQL Injection attack - SP's prevent sql injection attack. Please watch this video on SQL Injection Attack, for more information.
-```
 
 ## 22-24
 ```sql
@@ -203,9 +208,11 @@ SELECT STUFF('qwerty@aaa.com', 2, 3, '*****') as StuffedEmail --Output: q*****ty
 ```
 
 ## 25-27
-```sql
+
 --Note: UTC stands for Coordinated Universal Time, based on which, the world regulates clocks and time. There are slight differences 
 --between GMT and UTC, but for most common purposes, UTC is synonymous with GMT. 
+
+```sql
 
 --Function	          Date Time Format	                    Description
 GETDATE()	        --2012-08-31 20:15:04.543	            Commonly used function
@@ -550,17 +557,50 @@ SET TRANSACTION ISOLATION LEVEL READ UNCOMMITED;
 --Update statement using cursor is totally not efficient
 
 --Some of the common concurrency problems:
---Dirty Reads
---Lost Updates
---Nonrepeatable Reads
---Phantom Reads
+--*Dirty Reads
+--*Lost Updates
+--*Nonrepeatable Reads
+--*Phantom Reads
 
---A dirty read happens when one transaction is permitted to read data that has 
+--*A dirty read happens when one transaction is permitted to read data that has 
 --been modified by another transaction that has not yet been committed. 
 --Read Uncommitted transaction isolation level is the only isolation level that has dirty read side effect.
 
+--*Lost update problem happens when 2 transactions read and update the same data.
+--Both Read Uncommitted and Read Committed transaction isolation levels have the lost update side effect
 
+--*Non repeatable read problem happens when one transaction reads the same data twice and another transaction 
+--updates that data in between the first and second read of transaction one. 
+--Fixing non repeatable read concurrency problem : To fix the non-repeatable read problem, set transaction isolation 
+--level of Transaction 1 to repeatable read. This will ensure that the data that Transaction 1 has read, will be 
+--prevented from being updated or deleted elsewhere. This solves the non-repeatable read problem. 
 
+--*Phantom read happens when one transaction executes a query twice and it gets a different number of rows in 
+--the result set each time. This happens when a second transaction inserts a new row that matches the WHERE clause 
+--of the query executed by the first transaction. 
+
+Set transaction isolation level read uncommited
+Set transaction isolation level read commited
+Set transaction isolation level repeatable read
+Set transaction isolation level serializable
+-- Enable snapshot isloation for the database
+Alter database SampleDB SET ALLOW_SNAPSHOT_ISOLATION ON
+-- Set the transaction isolation level to snapshot
+Set transaction isolation level snapshot
+
+--Difference between repeatable read and serializable:
+--Repeatable read prevents only non-repeatable read. Repeatable read isolation level ensures that the data that one transaction 
+--has read, will be prevented from being updated or deleted by any other transaction, but it does not prevent new rows from being 
+--inserted by other transactions resulting in phantom read concurrency problem.
+
+--Serializable prevents both non-repeatable read and phantom read problems. Serializable isolation level ensures that the data 
+--that one transaction has read, will be prevented from being updated or deleted by any other transaction. It also prevents new 
+--rows from being inserted by other transactions, so this isolation level prevents both non-repeatable read and phantom read problems.
+
+--Snapshot isolation doesn't acquire locks, it maintains versioning in Tempdb.
+
+Alter database SampleDB SET READ_COMMITTED_SNAPSHOT ON --to do it you must close all database connections
+--upper is not a different isolation level, it is a different way of implementing read commited isolation level
 
 
 
