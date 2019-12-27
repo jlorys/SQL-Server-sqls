@@ -599,8 +599,9 @@ Set transaction isolation level snapshot
 
 --Snapshot isolation doesn't acquire locks, it maintains versioning in Tempdb.
 
-Alter database SampleDB SET READ_COMMITTED_SNAPSHOT ON --to do it you must close all database connections
---upper is not a different isolation level, it is a different way of implementing read commited isolation level
+Alter database SampleDB SET READ_COMMITTED_SNAPSHOT ON --to do it you must close all database connections, then:
+Set transaction isolation level read commited
+--above is not a different isolation level, it is a different way of implementing read commited isolation level
 
 
 
