@@ -609,6 +609,35 @@ Set transaction isolation level read commited
 ## 79-
 ```sql
 
+--What is DEADLOCK_PRIORITY
+--By default, SQL Server chooses a transaction as the deadlock victim that is least expensive to roll back.
+SET DEADLOCK_PRIORITY NORMAL
+SET DEADLOCK_PRIORITY HIGH
+
+--Enable Trace flag : To enable trace flags use DBCC command. -1 parameter indicates that the trace flag must be 
+--set at the global level. If you omit -1 parameter the trace flag will be set only at the session level.
+
+DBCC Traceon(1222, -1)
+--To check the status of the trace flag
+DBCC TraceStatus(1222, -1)
+--To turn off the trace flag
+DBCC Traceoff(1222, -1)
+
+execute sp_readerrorlog --there we can see deadlocks
+
+--Capturing deadlocks in sql profiler
+--Tools --> SQL Profiler
+--Use the template = Blank
+--On the Events Selection tab click Locks --> Deadlock graph
+--Finally click the Run button to start the trace
+--At this point execute the code that causes deadlock
+--The deadlock graph should be captured in the profiler.
+
+--HoBt ID : Heap Or Binary Tree ID. Using this ID query sys.partitions view to find the database objects involved in the deadlock.
+SELECT object_name([object_id])
+FROM sys.partitions
+WHERE hobt_id = 72057594041663488
+
 
 
 ```
