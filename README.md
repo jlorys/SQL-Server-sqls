@@ -14,6 +14,8 @@
 :fireworks: [39-51](#39-51) Views <br />
 :fireworks: [52-62](#52-62) Normalization, transactions <br />
 :fireworks: [63-77](#63-77) Cursors, transaction isolation levels <br />
+:fireworks: [78-86](#78-86) Deadlocks <br />
+
 
 ## 1-4
 
@@ -606,7 +608,7 @@ Set transaction isolation level read commited
 
 ```
 
-## 79-
+## 78-86
 ```sql
 
 --What is DEADLOCK_PRIORITY
