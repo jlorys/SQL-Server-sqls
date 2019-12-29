@@ -690,6 +690,57 @@ Cross Apply fn_GetEmployeesByDepartmentId(D.Id) E
 
 --cross apply is like join and outer apply is like left join
 
+```
+
+## 92-
+```sql
+
+--In SQL Server there are 4 types of triggers
+--1. DML Triggers - Data Manipulation Language. Discussed in Parts 43 to 47 of SQL Server Tutorial.
+--2. DDL Triggers - Data Definition Language
+--3. CLR triggers - Common Language Runtime
+--4. Logon triggers
+
+--DML trigger
+CREATE TRIGGER trMyFirstTrigger
+ON Database
+FOR CREATE_TABLE
+AS
+BEGIN
+   Print 'New table created'
+END
+
+DISABLE TRIGGER trMyFirstTrigger ON DATABASE
+ENABLE TRIGGER trMyFirstTrigger ON DATABASE
+DROP TRIGGER trMyFirstTrigger ON DATABASE
+
+--There is possible to create server scoped trigger
+--Server triggers will always fire before database triggers
+
+--Difference between WHERE and Having
+--1. WHERE clause cannot be used with aggregates where as HAVING can. This means WHERE clause is 
+--used for filtering individual rows where as HAVING clause is used to filter groups.
+--2. WHERE comes before GROUP BY. This means WHERE clause filters rows before aggregate calculations 
+--are performed. HAVING comes after GROUP BY. This means HAVING clause filters rows after aggregate calculations 
+--are performed. So from a performance standpoint, HAVING is slower than WHERE and should be avoided when possible.
+--3. WHERE and HAVING can be used together in a SELECT query. In this case WHERE clause is applied first to 
+--filter individual rows. The rows are then grouped and aggregate calculations are performed, and then the HAVING clause filters the groups.
+
+--From SQL Server 2008 there is possible to pass table valued parameter to procedure
+
+--From SQL Server 2008 there is possibility to group by sets
+Select Country, Gender, Sum(Salary) TotalSalary
+From Employees
+Group BY
+      GROUPING SETS
+      (
+            (Country, Gender), -- Sum of Salary by Country and Gender
+            (Country),         -- Sum of Salary by Country
+            (Gender) ,         -- Sum of Salary by Gender
+            ()                 -- Grand Total
+      )
+Order By Grouping(Country), Grouping(Gender), Gender
+
 
 
 ```
