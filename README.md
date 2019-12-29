@@ -15,6 +15,7 @@
 :fireworks: [52-62](#52-62) Normalization, transactions <br />
 :fireworks: [63-77](#63-77) Cursors, transaction isolation levels <br />
 :fireworks: [78-86](#78-86) Deadlocks <br />
+:fireworks: [87-91](#87-91) Unions, cross apply, outer apply <br />
 
 
 ## 1-4
@@ -667,6 +668,27 @@ GO
 --Using SQL command:
 KILL process_id
 
+```
+
+## 87-91
+```sql
+
+--So, what is the difference between EXCEPT and NOT IN operators
+--1. Except filters duplicates and returns only DISTINCT rows from the left query that aren’t in 
+--the right query’s results, where as NOT IN does not filter the duplicates.
+--2. EXCEPT operator expects the same number of columns in both the queries, where as NOT IN, 
+--compares a single column from the outer query with a single column from the subquery.
+
+--INTERSECT retrieves common records
+--UNION ALL operator returns all the rows from both the queries, including the duplicates.
+--UNION will delete duplicates
+
+--cross apply and outer apply can be used with table functions
+Select D.DepartmentName, E.Name, E.Gender, E.Salary
+from Department D
+Cross Apply fn_GetEmployeesByDepartmentId(D.Id) E
+
+--cross apply is like join and outer apply is like left join
 
 
 
