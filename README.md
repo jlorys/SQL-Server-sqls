@@ -16,6 +16,7 @@
 :fireworks: [63-77](#63-77) Cursors, transaction isolation levels <br />
 :fireworks: [78-86](#78-86) Deadlocks <br />
 :fireworks: [87-91](#87-91) Unions, cross apply, outer apply <br />
+:fireworks: [92-101](#92-101) Trigger, Where != Having, Grouping sets <br />
 
 
 ## 1-4
@@ -98,7 +99,7 @@ INSERT INTO tblPerson(PersonId, Name) VALUES (2, 'John')
 
 --After, you have the gaps in the identity column filled, and if you wish SQL server to calculate the value, turn off 
 --Identity_Insert.
-SET Identity_Insert tblPerson OFF
+SET Identity_Insert tblPerson OFF7
 
 --If you have deleted all the rows in a table, and you want to reset the identity column value, use DBCC CHECKIDENT 
 --command. This command will reset PersonId identity column.
@@ -458,7 +459,7 @@ EXECUTE SP_HELPCONSTRAINT tblEmployee
 --Script to create view vWTotalSalesByProduct
 
 Create view vWTotalSalesByProduct
-with SchemaBinding
+with SchemaBinding --it protects from table deletion
 as
 	Select Name, 
 		   SUM(ISNULL((QuantitySold * UnitPrice), 0)) as TotalSales, 
@@ -501,43 +502,10 @@ on vWTotalSalesByProduct(Name)
 --In SQL Server 2000 there was begin tran, end tran with @@ERROR function. In 2005 or later there is begin transaction, 
 --end transaction in try catch (should be in begin try, end try)
 
-Create Procedure spSellProduct
-@ProductId int,
-@QuantityToSell int
-as
-Begin
- -- Check the stock available, for the product we want to sell
- Declare @StockAvailable int
- Select @StockAvailable = QtyAvailable 
- from tblProduct where ProductId = @ProductId
- 
- -- Throw an error to the calling application, if enough stock is not available
- if(@StockAvailable < @QuantityToSell)
-  Begin
+Begin Try
   Raiserror('Not enough stock available',16,1)
-  End
- -- If enough stock available
- Else
-  Begin
-   Begin Try
-    Begin Transaction
-        -- First reduce the quantity available
-  Update tblProduct set QtyAvailable = (QtyAvailable - @QuantityToSell)
-  where ProductId = @ProductId
-  
-  Declare @MaxProductSalesId int
-  -- Calculate MAX ProductSalesId  
-  Select @MaxProductSalesId = Case When 
-          MAX(ProductSalesId) IS NULL 
-          Then 0 else MAX(ProductSalesId) end 
-         from tblProductSales
-  --Increment @MaxProductSalesId by 1, so we don't get a primary key violation
-  Set @MaxProductSalesId = @MaxProductSalesId + 1
-  Insert into tblProductSales values(@MaxProductSalesId, @ProductId, @QuantityToSell)
-    Commit Transaction
-   End Try
-   Begin Catch 
-  Rollback Transaction
+End Try
+Begin Catch 
   Select 
    ERROR_NUMBER() as ErrorNumber,
    ERROR_MESSAGE() as ErrorMessage,
@@ -545,9 +513,7 @@ Begin
    ERROR_STATE() as ErrorState,
    ERROR_SEVERITY() as ErrorSeverity,
    ERROR_LINE() as ErrorLine
-   End Catch 
-  End
-End
+End Catch 
 
 --SQL server by default cannot select uncommited data, there is possible to change it:
 SET TRANSACTION ISOLATION LEVEL READ UNCOMMITED;
@@ -692,7 +658,7 @@ Cross Apply fn_GetEmployeesByDepartmentId(D.Id) E
 
 ```
 
-## 92-
+## 92-101
 ```sql
 
 --In SQL Server there are 4 types of triggers
@@ -740,6 +706,32 @@ Group BY
             ()                 -- Grand Total
       )
 Order By Grouping(Country), Grouping(Gender), Gender
+
+```
+
+## 92-101
+```sql
+
+SELECT Country, SUM(Salary) AS TotalSalary
+FROM Employees
+GROUP BY ROLLUP(Country)  -- GROUP BY Country WITH ROLLUP
+
+SELECT Country, Gender, SUM(Salary) AS TotalSalary
+FROM Employees
+GROUP BY Cube(Country, Gender)  -- GROUP BY Country, Gender with Cube
+
+--Difference is that wih rollup we're having hierarchy grouping and with cube all combinations
+--You won't see any difference when you use this functions on single column. 3 are nedded
+
+--grouping function
+SELECT Continent, Country, City, SUM(SaleAmount) AS TotalSales,
+       GROUPING(Continent) AS GP_Continent, --return 1 if column was grouped
+       GROUPING(Country) AS GP_Country,
+       GROUPING(City) AS GP_City
+FROM Sales
+GROUP BY ROLLUP(Continent, Country, City)
+
+
 
 
 
