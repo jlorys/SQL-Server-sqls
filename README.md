@@ -16,7 +16,7 @@
 :fireworks: [63-77](#63-77) Cursors, transaction isolation levels <br />
 :fireworks: [78-86](#78-86) Deadlocks <br />
 :fireworks: [87-91](#87-91) Unions, cross apply, outer apply <br />
-:fireworks: [92-101](#92-101) Trigger, Where != Having, Grouping sets <br />
+:fireworks: [92-106](#92-106) Trigger, Where != Having, Grouping sets, rollup, cube, grouping, grouping id <br />
 
 
 ## 1-4
@@ -658,7 +658,7 @@ Cross Apply fn_GetEmployeesByDepartmentId(D.Id) E
 
 ```
 
-## 92-101
+## 92-106
 ```sql
 
 --In SQL Server there are 4 types of triggers
@@ -707,11 +707,6 @@ Group BY
       )
 Order By Grouping(Country), Grouping(Gender), Gender
 
-```
-
-## 92-101
-```sql
-
 SELECT Country, SUM(Salary) AS TotalSalary
 FROM Employees
 GROUP BY ROLLUP(Country)  -- GROUP BY Country WITH ROLLUP
@@ -731,7 +726,7 @@ SELECT Continent, Country, City, SUM(SaleAmount) AS TotalSales,
 FROM Sales
 GROUP BY ROLLUP(Continent, Country, City)
 
---Change nulls into All value, to be more user friendly
+--Change nulls into All value, to be more user friendly (There must be case because of possible nulls)
 SELECT  
     CASE WHEN GROUPING(Continent) = 1 THEN 'All' ELSE ISNULL(Continent, 'Unknown') END AS Continent,
     CASE WHEN GROUPING(Country) = 1 THEN 'All' ELSE ISNULL(Country, 'Unknown') END AS Country,
@@ -740,7 +735,35 @@ SELECT
 FROM Sales
 GROUP BY ROLLUP(Continent, Country, City)
 
+SELECT  Continent, Country, City, SUM(SaleAmount) AS TotalSales,
+        GROUPING_ID(Continent, Country, City) AS GPID --specifies grouping by binary (1,2,4) addition
+FROM Sales
+GROUP BY ROLLUP(Continent, Country, City)
+ORDER BY GPID
 
+```
+
+## 107-
+```sql
+
+--COUNT(Gender) OVER (PARTITION BY Gender) will partition the data by GENDER i.e there will 2 partitions 
+--(Male and Female) and then the COUNT() function is applied over each partition.
+
+--Any of the following functions can be used. Please note this is not the complete list.
+--COUNT(), AVG(), SUM(), MIN(), MAX(), ROW_NUMBER(), RANK(), DENSE_RANK() etc.
+
+--Below query alternative is long query with derived table
+SELECT Name, Salary, Gender,
+        COUNT(Gender) OVER(PARTITION BY Gender) AS GenderTotals,
+        AVG(Salary) OVER(PARTITION BY Gender) AS AvgSal,
+        MIN(Salary) OVER(PARTITION BY Gender) AS MinSal,
+        MAX(Salary) OVER(PARTITION BY Gender) AS MaxSal
+FROM Employees
+
+SELECT Name, Gender, Salary,
+        ROW_NUMBER() OVER (PARTITION BY Gender ORDER BY Gender) AS RowNumber
+FROM Employees
 
 
 ```
+
