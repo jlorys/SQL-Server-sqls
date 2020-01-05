@@ -718,19 +718,27 @@ GROUP BY ROLLUP(Country)  -- GROUP BY Country WITH ROLLUP
 
 SELECT Country, Gender, SUM(Salary) AS TotalSalary
 FROM Employees
-GROUP BY Cube(Country, Gender)  -- GROUP BY Country, Gender with Cube
+GROUP BY CUBE(Country, Gender)  -- GROUP BY Country, Gender with Cube
 
 --Difference is that wih rollup we're having hierarchy grouping and with cube all combinations
 --You won't see any difference when you use this functions on single column. 3 are nedded
 
 --grouping function
 SELECT Continent, Country, City, SUM(SaleAmount) AS TotalSales,
-       GROUPING(Continent) AS GP_Continent, --return 1 if column was grouped
-       GROUPING(Country) AS GP_Country,
-       GROUPING(City) AS GP_City
+    GROUPING(Continent) AS GP_Continent, --return 1 if column was grouped
+    GROUPING(Country) AS GP_Country,
+    GROUPING(City) AS GP_City
 FROM Sales
 GROUP BY ROLLUP(Continent, Country, City)
 
+--Change nulls into All value, to be more user friendly
+SELECT  
+    CASE WHEN GROUPING(Continent) = 1 THEN 'All' ELSE ISNULL(Continent, 'Unknown') END AS Continent,
+    CASE WHEN GROUPING(Country) = 1 THEN 'All' ELSE ISNULL(Country, 'Unknown') END AS Country,
+    CASE WHEN GROUPING(City) = 1 THEN 'All' ELSE ISNULL(City, 'Unknown') END AS City,
+    SUM(SaleAmount) AS TotalSales
+FROM Sales
+GROUP BY ROLLUP(Continent, Country, City)
 
 
 
