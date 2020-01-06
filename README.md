@@ -17,6 +17,7 @@
 :fireworks: [78-86](#78-86) Deadlocks <br />
 :fireworks: [87-91](#87-91) Unions, cross apply, outer apply <br />
 :fireworks: [92-106](#92-106) Trigger, Where != Having, Grouping sets, rollup, cube, grouping, grouping id <br />
+:fireworks: [107-117](#107-117) over, row_number, rank, dense_rank, ntile, lead, lag, first_value <br />
 
 
 ## 1-4
@@ -743,7 +744,7 @@ ORDER BY GPID
 
 ```
 
-## 107-
+## 107-117
 ```sql
 
 --COUNT(Gender) OVER (PARTITION BY Gender) will partition the data by GENDER i.e there will 2 partitions 
@@ -754,16 +755,93 @@ ORDER BY GPID
 
 --Below query alternative is long query with derived table
 SELECT Name, Salary, Gender,
-        COUNT(Gender) OVER(PARTITION BY Gender) AS GenderTotals,
-        AVG(Salary) OVER(PARTITION BY Gender) AS AvgSal,
-        MIN(Salary) OVER(PARTITION BY Gender) AS MinSal,
-        MAX(Salary) OVER(PARTITION BY Gender) AS MaxSal
+    COUNT(Gender) OVER(PARTITION BY Gender) AS GenderTotals,
+    AVG(Salary) OVER(PARTITION BY Gender) AS AvgSal,
+    MIN(Salary) OVER(PARTITION BY Gender) AS MinSal,
+    MAX(Salary) OVER(PARTITION BY Gender) AS MaxSal
 FROM Employees
 
 SELECT Name, Gender, Salary,
-        ROW_NUMBER() OVER (PARTITION BY Gender ORDER BY Gender) AS RowNumber
+    ROW_NUMBER() OVER (PARTITION BY Gender ORDER BY Gender) AS RowNumber
+FROM Employees
+
+--Second highest salary, if rank was used istead of dense_rank then couldn't be 2
+WITH Result AS
+(
+    SELECT Salary, DENSE_RANK() OVER (ORDER BY Salary DESC) AS Salary_Rank
+    FROM Employees
+)
+SELECT Salary FROM Result WHERE Salary_Rank = 2
+
+--Difference between row_number, rank and dense_rank is when we have duplicate values:
+--row_number will do incrementing without looking on column
+--rank will look at colum values, but will do jumps bewteen ids
+--dense_rank will do same as rank, but will proper records identification
+
+--Running total, there is need to ORDER BY unique column, because if not total can be incorrect
+--by treating duplice values as one row
+SELECT Name, Gender, Salary,
+    SUM(Salary) OVER (PARTITION BY Gender ORDER BY ID) AS RunningTotal
+FROM Employees
+
+--NTILE divide rows into group, here dividing by 3, larger groups going first
+SELECT Name, Gender, Salary, 
+    NTILE(3) OVER (ORDER BY Salary) AS [Ntile]
+FROM Employees
+
+--Third parameter is default value, second is jump
+SELECT Name, Gender, Salary,
+    LEAD(Salary, 2, -1) OVER (ORDER BY Salary) AS Lead_2,
+    LAG(Salary, 1, -1) OVER (ORDER BY Salary) AS Lag_1
+FROM Employees
+
+--Takes FirstValue as name of employee with lowest salary
+SELECT Name, Gender, Salary,
+    FIRST_VALUE(Name) OVER (PARTITION BY Gender ORDER BY Salary) AS FirstValue
+FROM Employees
+
+--The default for ROWS or RANGE clause is
+--RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+--Below we changed default range to show overall sum
+SELECT Name, Gender, Salary,
+        SUM(Salary) OVER(ORDER BY Salary RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS Sum
+FROM Employees
+
+--sum from 3 rows
+SELECT Name, Gender, Salary,
+        SUM(Salary) OVER(ORDER BY Salary ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING) AS Average
+FROM Employees
+
+--ROWS treat duplicates as distinct values, where as RANGE treats them as a single entity.
+
+```
+
+## 118
+```sql
+
+--LAST_VALUE needs add rows between clause to show employee with highest salary.
+--If not it will show only from first to to current
+SELECT Name, Gender, Salary,
+    LAST_VALUE(Name) OVER (PARTITION BY Gender ORDER BY Salary
+    ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS LastValue
 FROM Employees
 
 
+
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
