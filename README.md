@@ -18,6 +18,8 @@
 :fireworks: [87-91](#87-91) Unions, cross apply, outer apply <br />
 :fireworks: [92-106](#92-106) Trigger, Where != Having, Grouping sets, rollup, cube, grouping, grouping id <br />
 :fireworks: [107-117](#107-117) over, row_number, rank, dense_rank, ntile, lead, lag, first_value <br />
+:fireworks: [188](#188) Last_value, unpivot, choose, try_convert, try_parse, eomonth, datafromparts, datetime2fromparts <br />
+
 
 
 ## 1-4
@@ -825,6 +827,33 @@ SELECT Name, Gender, Salary,
     LAST_VALUE(Name) OVER (PARTITION BY Gender ORDER BY Salary
     ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS LastValue
 FROM Employees
+
+--UNPIVOT operator helps us to unpivot pivoted table
+--India, US, UK was columns changed to one Country column
+SELECT SalesAgent, Country, SalesAmount
+FROM tblProductSales
+UNPIVOT
+(
+    SalesAmount
+    FOR Country IN (India, US ,UK)
+) AS UnpivotExample
+--Unpivot cannot be done if pivot has aggregated data
+
+--Choose function replaces boilerplate case whens
+SELECT Name, DateOfBirth, CHOOSE(DATEPART(MM, DateOfBirth), 
+       'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 
+       'SEP', 'OCT', 'NOV', 'DEC') AS [MONTH]
+FROM Employees
+
+--IIF function replaces CASE WHEN with one WHEN and ELSE
+SELECT IIF(TRY_PARSE('ABC' AS INT) IS NULL, 'Conversion Failed', 'Conversion Successful') AS Result
+
+SELECT TRY_CONVERT(XML, '<root><child/></root>') AS [XML]
+ 
+SELECT EOMONTH('3/20/2016', -1) AS LastDay --Returns 29.02.2016
+
+SELECT DATEFROMPARTS (2015, 10, 25) AS [Date] -- Returns 25/10/2015
+SELECT DATETIME2FROMPARTS ( 2015, 11, 15, 20, 55, 55, 0, 0 ) AS [DateTime2]
 
 
 
