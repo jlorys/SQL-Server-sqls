@@ -18,7 +18,7 @@
 :fireworks: [87-91](#87-91) Unions, cross apply, outer apply <br />
 :fireworks: [92-106](#92-106) Trigger, Where != Having, Grouping sets, rollup, cube, grouping, grouping id <br />
 :fireworks: [107-117](#107-117) over, row_number, rank, dense_rank, ntile, lead, lag, first_value <br />
-:fireworks: [188](#188) Last_value, unpivot, choose, try_convert, try_parse, eomonth, datafromparts, datetime2fromparts <br />
+:fireworks: [118-129](#118-129) Last_value, unpivot, choose, try_convert, try_parse, eomonth, datefromparts, datetime2fromparts <br />
 
 
 
@@ -818,7 +818,7 @@ FROM Employees
 
 ```
 
-## 118
+## 118-129
 ```sql
 
 --LAST_VALUE needs add rows between clause to show employee with highest salary.
@@ -853,13 +853,35 @@ SELECT TRY_CONVERT(XML, '<root><child/></root>') AS [XML]
 SELECT EOMONTH('3/20/2016', -1) AS LastDay --Returns 29.02.2016
 
 SELECT DATEFROMPARTS (2015, 10, 25) AS [Date] -- Returns 25/10/2015
+
+--DATETIME2FROMPARTS ( year, month, day, hour, minute, seconds, fractions, precision )
 SELECT DATETIME2FROMPARTS ( 2015, 11, 15, 20, 55, 55, 0, 0 ) AS [DateTime2]
+--TIMEFROMPARTS ( hour, minute, seconds, fractions, precision )
+SELECT TIMEFROMPARTS ( 20, 55, 55, 0, 0 ) AS [Time]
+
+--DATETIME2 is better than DATETIME
+SELECT 'Precision - 1' , CAST(SYSDATETIME() AS DATETIME2(1)), DATALENGTH(CAST(GETDATE() AS DATETIME2(1))) AS StorageSize
+union all
+SELECT 'Precision - 2' , CAST(SYSDATETIME() AS DATETIME2(2)), DATALENGTH(CAST(GETDATE() AS DATETIME2(2))) 
+union all
+SELECT 'Precision - 3' , CAST(SYSDATETIME() AS DATETIME2(3)), DATALENGTH(CAST(GETDATE() AS DATETIME2(3)))
+union all
+SELECT 'Precision - 4' , CAST(SYSDATETIME() AS DATETIME2(4)), DATALENGTH(CAST(GETDATE() AS DATETIME2(4))) 
+union all
+SELECT 'Precision - 5' , CAST(SYSDATETIME() AS DATETIME2(5)), DATALENGTH(CAST(GETDATE() AS DATETIME2(5))) 
+union all
+SELECT 'Precision - 6' , CAST(SYSDATETIME() AS DATETIME2(6)), DATALENGTH(CAST(GETDATE() AS DATETIME2(6))) 
+union all
+SELECT 'Precision - 7' , CAST(SYSDATETIME() AS DATETIME2(7)), DATALENGTH(CAST(GETDATE() AS DATETIME2(7))) 
+
+```
+
+## 130-
+```sql
 
 
 
 ```
-
-
 
 
 
