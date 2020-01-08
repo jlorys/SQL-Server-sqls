@@ -879,6 +879,17 @@ SELECT 'Precision - 7' , CAST(SYSDATETIME() AS DATETIME2(7)), DATALENGTH(CAST(GE
 ## 130-
 ```sql
 
+--paging functionality
+CREATE PROCEDURE spGetRowsByPageNumberAndSize
+@PageNumber INT,
+@PageSize INT
+AS
+BEGIN
+    SELECT * FROM tblProducts
+    ORDER BY Id
+    OFFSET (@PageNumber - 1) * @PageSize ROWS
+    FETCH NEXT @PageSize ROWS ONLY
+END
 
 
 ```
