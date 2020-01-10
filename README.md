@@ -653,9 +653,9 @@ KILL process_id
 --UNION will delete duplicates
 
 --cross apply and outer apply can be used with table functions
-Select D.DepartmentName, E.Name, E.Gender, E.Salary
-from Department D
-Cross Apply fn_GetEmployeesByDepartmentId(D.Id) E
+SELECT D.DepartmentName, E.Name, E.Gender, E.Salary
+FROM Department D
+CROSS Apply fn_GetEmployeesByDepartmentId(D.Id) E
 
 --cross apply is like join and outer apply is like left join
 
