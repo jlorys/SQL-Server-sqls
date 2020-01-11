@@ -891,6 +891,8 @@ BEGIN
     FETCH NEXT @PageSize ROWS ONLY
 END
 
+--Identifying object dependencies in SQL Server --> Right click on table, then view dependencies
+
 
 ```
 
