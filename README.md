@@ -19,6 +19,7 @@
 :fireworks: [92-106](#92-106) Trigger, Where != Having, Grouping sets, rollup, cube, grouping, grouping id <br />
 :fireworks: [107-117](#107-117) over, row_number, rank, dense_rank, ntile, lead, lag, first_value <br />
 :fireworks: [118-129](#118-129) Last_value, unpivot, choose, try_convert, try_parse, eomonth, datefromparts, datetime2fromparts <br />
+:fireworks: [130-137](#130-137) sp_depends alternative, GUID <br />
 
 
 
@@ -876,7 +877,7 @@ SELECT 'Precision - 7' , CAST(SYSDATETIME() AS DATETIME2(7)), DATALENGTH(CAST(GE
 
 ```
 
-## 130-
+## 130-137
 ```sql
 
 --paging functionality
@@ -892,6 +893,34 @@ BEGIN
 END
 
 --Identifying object dependencies in SQL Server --> Right click on table, then view dependencies
+
+Select * from sys.dm_sql_referencing_entities('dbo.Employees','Object')
+Select * from sys.dm_sql_referenced_entities('dbo.sp_GetEmployeesandDepartments','Object')
+
+--sp_depends does not show table which was deleted and restored, thats why we cannot trust results
+--sp_depends is on the deprecation path. This might be removed from the future versions of SQL server.
+
+--GUID is a globally unique value
+Create Table USACustomers1
+(
+     ID uniqueidentifier primary key default NEWID(),
+     Name nvarchar(50)
+)
+Go
+
+Insert Into USACustomers1 Values (Default, 'Tom')
+Insert Into USACustomers1 Values (Default, 'Mike')
+
+--The main advantage of using a GUID is that it is unique across tables, databases and servers. 
+--It is extremely useful if you're consolidating records from multiple SQL Servers into a single table. 
+
+--The main disadvantage of using a GUID as a key is that it is 16 bytes in size. It is one of the 
+--largest datatypes in SQL Server. An integer on the other hand is 4 bytes,
+
+--An Index built on a GUID is larger and slower than an index built on integer column. 
+--In addition a GUID is hard to read compared to int.
+
+
 
 
 ```
