@@ -920,6 +920,11 @@ INSERT INTO USACustomers1 VALUES (DEFAULT, 'Mike')
 --An Index built on a GUID is larger and slower than an index built on integer column. 
 --In addition a GUID is hard to read compared to int.
 
+--This is how we check if GUID is empty
+Declare @MyGuid UniqueIdentifier
+Select ISNULL(@MyGuid, NewID())
+
+
 
 
 
