@@ -21,6 +21,7 @@
 :fireworks: [118-129](#118-129) Last_value, unpivot, choose, try_convert, try_parse, eomonth, datefromparts, datetime2fromparts <br />
 :fireworks: [130-137](#130-137) sp_depends alternative, GUID <br />
 :fireworks: [138-144](#138-144) query plans, execute <br />
+:fireworks: [145-149](#145-149) quotename function, temp tables note <br />
 
 
 ## 1-4
@@ -946,6 +947,26 @@ Execute sp_executesql N'Select * from Employees where FirstName=@FN', N'@FN nvar
 --parameterised queries which not only promotes cached query plans reuse but also prevent sql injection attacks.
 
 --it is always better to use sp_executesql than execute because we can explicitly parametrize queries
+
+```
+
+## 145-149
+```sql
+
+Declare @sql nvarchar(200)
+Declare @tableName nvarchar(50)
+Set @tableName = 'USA Customers Drop Database SalesDB --'
+Set @sql = 'Select * from ' + QUOTENAME(@tableName)
+select @sql
+--QUOTENAME default value is square bracket
+
+SELECT QUOTENAME('USA Customers') 
+SELECT QUOTENAME('USA Customers','[') 
+SELECT QUOTENAME('USA Customers',']')
+SELECT QUOTENAME('USA Customers','''')
+SELECT QUOTENAME('USA Customers','"')
+
+--temporary table created in dynaminc sql will be dropped after it completes
 
 ```
 
