@@ -20,7 +20,7 @@
 :fireworks: [107-117](#107-117) over, row_number, rank, dense_rank, ntile, lead, lag, first_value <br />
 :fireworks: [118-129](#118-129) Last_value, unpivot, choose, try_convert, try_parse, eomonth, datefromparts, datetime2fromparts <br />
 :fireworks: [130-137](#130-137) sp_depends alternative, GUID <br />
-
+:fireworks: [138-144](#138-144) query plans, execute <br />
 
 
 ## 1-4
@@ -924,14 +924,30 @@ INSERT INTO USACustomers1 VALUES (DEFAULT, 'Mike')
 Declare @MyGuid UniqueIdentifier
 Select ISNULL(@MyGuid, NewID())
 
-
-
-
-
-
 ```
 
+## 138-144
+```sql
+--query for finding query plans, last result column is clickable --> it moves us to query plan
+SELECT cp.usecounts, cp.cacheobjtype, cp.objtype, st.text, qp.query_plan
+FROM sys.dm_exec_cached_plans AS cp
+CROSS APPLY sys.dm_exec_sql_text(plan_handle) AS st
+CROSS APPLY sys.dm_exec_query_plan(plan_handle) AS qp
+ORDER BY cp.usecounts DESC
 
+--objtype contains what for what type of object query plan was generated (adhoc, proc etc.)
+--if we compute select statement from an adhoc query, it checks if query plan exists by checking hash value of query text
+
+Declare @FirstName nvarchar(50)
+Set @FirstName = 'Steve'
+Execute sp_executesql N'Select * from Employees where FirstName=@FN', N'@FN nvarchar(50)', @FirstName
+
+--Summary: Never ever concatenate user input values with strings to build dynamic sql statements. Always use 
+--parameterised queries which not only promotes cached query plans reuse but also prevent sql injection attacks.
+
+--it is always better to use sp_executesql than execute because we can explicitly parametrize queries
+
+```
 
 
 
